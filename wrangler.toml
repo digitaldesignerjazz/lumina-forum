@@ -1,7 +1,7 @@
 name = "lumina-forum"
 main = "src/index.js"
 compatibility_date = "2025-07-01"
-account_id = "b396f8898878d236a36aaf70de04dea1"
+account_id = "0713fcac60cfa3d2dc57c93d1e6a3186"
 workers_dev = true
 
 # Static files (CSS, favicon). Matching files are served before the Worker runs.
@@ -11,9 +11,8 @@ binding = "ASSETS"
 
 [[kv_namespaces]]
 binding = "STORE"
-# PLACEHOLDER: local dev only (wrangler dev --local uses a local simulated KV).
-# Replace with a real namespace id before any deploy.
-id = "00000000000000000000000000000000"
+# KV namespace "lumina-forum-STORE" on account 0713fcac60cfa3d2dc57c93d1e6a3186 (Helpful Mojoceratops)
+id = "c00f81cdccd4410a8c26eef1897b3306"
 
 [vars]
 FORUM_NAME = "Lumina Forum"

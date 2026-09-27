@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Lumina Forum: German community forum as a Cloudflare Worker with KV storage",
   "scripts": {
+    "inline-assets": "node scripts/inline-assets.mjs",
     "dev": "/home/box/.npm/_npx/0eedb5afd4158ff3/node_modules/.bin/wrangler dev --local --port 8799",
     "check": "/home/box/.npm/_npx/0eedb5afd4158ff3/node_modules/.bin/wrangler deploy --dry-run --outdir .dryrun"
   }

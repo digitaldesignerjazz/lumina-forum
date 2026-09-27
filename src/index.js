@@ -7,6 +7,7 @@ import {
   ID_RE, LIMITS, clientIp, html, json, readInput, redirect, validateReplyInput, validateThreadInput,
 } from "./util.js";
 import { categoryPage, homePage, messagePage, threadPage } from "./views.js";
+import { STATIC_ASSETS } from "./static-assets.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -25,6 +26,17 @@ async function route(request, env) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
   const method = request.method.toUpperCase();
+
+  // Static files (fallback when deployed without the Workers Assets binding; mirrors Assets headers).
+  const asset = STATIC_ASSETS[url.pathname];
+  if (asset && (method === "GET" || method === "HEAD")) {
+    const headers = { "Content-Type": asset.type, "Cache-Control": "public, max-age=0, must-revalidate", ETag: asset.etag };
+    const inm = request.headers.get("If-None-Match");
+    if (inm && inm.split(",").some((t) => t.trim().replace(/^W\//, "") === asset.etag)) {
+      return new Response(null, { status: 304, headers });
+    }
+    return new Response(method === "HEAD" ? null : asset.body, { headers });
+  }
 
   if (method === "OPTIONS" && path.startsWith("/api/")) {
     return new Response(null, {

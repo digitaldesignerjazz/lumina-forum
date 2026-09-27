@@ -4,13 +4,15 @@ A small German-language community forum that runs as a Cloudflare Worker. Pages 
 
 ## Layout
 ```
-wrangler.toml        Worker config (assets + KV binding STORE, placeholder id)
+wrangler.toml        Worker config (account, assets, KV binding STORE)
 package.json         scripts: dev, check (dry-run bundle)
 src/index.js         router: HTML pages + JSON API
 src/store.js         KV data layer, seeding, rate limit
 src/views.js         server-rendered HTML (German UI), everything escaped
 src/util.js          escaping, validation, limits, responses, security headers
 src/categories.js    fixed category list
+src/static-assets.js GENERATED: public/ files inlined (fallback without Assets binding)
+scripts/inline-assets.mjs  regenerates src/static-assets.js
 public/styles.css    dark theme with violet "Lumina" glow, responsive
 public/favicon.svg
 ```
@@ -48,10 +50,12 @@ Categories: `allgemein`, `technik-nexus`, `musik` (Musik (OUR BAND)), `marktplat
 ## Limits and safety
 Titles are 3–120 characters, names 2–40 and posts 2–8000. Request bodies are capped at 32 KB. Control and bidi characters are stripped. A honeypot field catches simple bots. A strict CSP blocks all scripts (`default-src 'none'`), and the `nosniff`, `DENY` and `same-origin` headers are set.
 
-## Deploying (not done yet)
-1. Create or choose a KV namespace, then put its id in `wrangler.toml` in place of the placeholder.
-   (One namespace was already created during setup: `lumina-forum-STORE`, id `87f62ed739e149c7ba6eb1fcb7a7ecfe`.)
-2. `wrangler deploy` → `https://lumina-forum.elysium-forum.workers.dev`
+## Deployment
+Live at **https://lumina-forum.helpful-mojoceratops.workers.dev**. It runs on the Cloudflare account "Helpful Mojoceratops" (`0713fcac60cfa3d2dc57c93d1e6a3186`) with the KV namespace `lumina-forum-STORE` (`c00f81cdccd4410a8c26eef1897b3306`).
+
+The worker was uploaded through the Cloudflare API as a single bundled ES module (built with `wrangler deploy --dry-run --outdir`), without the Workers Assets binding. To make that work, `src/static-assets.js` inlines the files from `public/`, and the worker serves them itself with Assets-style headers (`Cache-Control: public, max-age=0, must-revalidate`, `ETag`, `304`). Run `npm run inline-assets` after changing anything in `public/`.
+
+A regular `wrangler deploy` (with `[assets]` in `wrangler.toml`) also works. In that mode, Assets serves `public/` before the worker runs, so the inlined fallback is never reached. Wrangler must be logged in to the account above.
 
 ## Follow-ups
 - Moderation and admin tools: delete or edit posts, lock or pin threads, ban IPs, report button. There is no admin yet.
